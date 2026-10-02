@@ -1,0 +1,19 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Disallow: /wp-admin/
+Disallow: /tmp/
+Disallow: /cgi-bin/
+Disallow: /wp-login.php
+Disallow: /login.php
+Crawl-delay: 10
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+
+
+Sitemap: https://allenhousejhansi.com/sitemap.xml
