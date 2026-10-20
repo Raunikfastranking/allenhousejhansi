@@ -85,31 +85,36 @@ function testimonialCardStyles(): void
             text-decoration: underline;
         }
 
-        .home-testimonial-card .testimonial-text .full-text.hidden {
+        .home-testimonial-card .testimonial-text .full-text.hidden,
+        .home-testimonial-card .full-text.hidden {
             display: none !important;
         }
 
-        .home-testimonial-card .testimonial-text .full-text:not(.hidden) {
+        .home-testimonial-card .testimonial-text .full-text:not(.hidden),
+        .home-testimonial-card .full-text:not(.hidden) {
             display: block;
             max-height: 200px;
-            overflow-y: auto;
+            overflow-y: scroll;
             overflow-x: hidden;
-            padding-right: 6px;
+            padding-right: 10px;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.55) rgba(255, 255, 255, 0.12);
+            scrollbar-color: rgba(255, 255, 255, 0.7) rgba(255, 255, 255, 0.15);
         }
 
-        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar {
-            width: 6px;
+        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar,
+        .home-testimonial-card .full-text:not(.hidden)::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.12);
+        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar-track,
+        .home-testimonial-card .full-text:not(.hidden)::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 4px;
         }
 
-        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.5);
+        .home-testimonial-card .testimonial-text .full-text:not(.hidden)::-webkit-scrollbar-thumb,
+        .home-testimonial-card .full-text:not(.hidden)::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 4px;
         }
 
@@ -190,6 +195,31 @@ function testimonialCardScripts(): void
                 return button.closest('.home-testimonial-card');
             }
 
+            function collapseHomeTestimonialCard(card) {
+                var shortText = card.querySelector('.short-text');
+                var fullText = card.querySelector('.full-text');
+                if (shortText && fullText) {
+                    shortText.classList.remove('hidden');
+                    fullText.classList.add('hidden');
+                }
+                card.querySelectorAll('.testimonial-text.expanded').forEach(function (para) {
+                    para.classList.remove('expanded');
+                    para.classList.add('clamp-2');
+                });
+                var cardButton = card.querySelector('.moreless-button');
+                if (cardButton) {
+                    cardButton.textContent = 'Read more...';
+                }
+            }
+
+            function collapseOtherHomeTestimonialCards(activeCard) {
+                document.querySelectorAll('.home-testimonial-card').forEach(function (card) {
+                    if (card !== activeCard) {
+                        collapseHomeTestimonialCard(card);
+                    }
+                });
+            }
+
             function bindHomeTestimonialToggles(scope) {
                 (scope || document).querySelectorAll('.home-testimonial-card .moreless-button').forEach(function (button) {
                     if (button.dataset.bound === '1') {
@@ -214,11 +244,19 @@ function testimonialCardScripts(): void
                                 fullText.classList.add('hidden');
                                 button.textContent = 'Read more...';
                             } else {
+                                collapseOtherHomeTestimonialCards(card);
                                 shortText.classList.add('hidden');
                                 fullText.classList.remove('hidden');
                                 button.textContent = 'Read less';
                             }
                             return;
+                        }
+                        var willExpand = !para.classList.contains('expanded');
+                        if (willExpand) {
+                            var card = testimonialCardRoot(button);
+                            if (card) {
+                                collapseOtherHomeTestimonialCards(card);
+                            }
                         }
                         para.classList.toggle('expanded');
                         para.classList.toggle('clamp-2');
